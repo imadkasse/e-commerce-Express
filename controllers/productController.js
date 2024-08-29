@@ -71,7 +71,7 @@ exports.deleteProduct = catchAsync(async (req, res, next) => {
   });
 });
 
-// Shop Cart Function
+// Shop Cart Functions
 exports.getShopCart = catchAsync(async (req, res, next) => {
   const user = await User.findById(req.user.id);
   if (!user) {
@@ -139,3 +139,72 @@ exports.clearCart = catchAsync(async (req, res, next) => {
     message: "clear Shop Cart succssesful",
   });
 });
+
+// Favorite Functions
+
+exports.addProductToFav = catchAsync(async (req, res, next) => {
+  const product = await Product.findById(req.params.id);
+  if (!product) {
+    return next(new AppError("Product not found with that Id", 404));
+  }
+
+  const user = await User.findByIdAndUpdate(req.user.id, {
+    $push: { favorites: product._id },
+  });
+
+  res.status(201).json({
+    status: "success",
+    message: "Product added to Favorites successfully",
+  });
+});
+
+exports.removeProductFromFav = catchAsync(async (req, res, next) => {
+  const product = await Product.findById(req.params.id);
+  if (!product) {
+    return next(new AppError("Product not found with that Id", 404));
+  }
+  const user = await User.findByIdAndUpdate(
+    req.user.id,
+    {
+      $pull: { favorites: product._id },
+    },
+    {
+      new: true,
+      runValidators: true,
+    }
+  );
+  res.status(204).json({
+    status: "success",
+    message: "Product removed from Favorites successfully",
+  });
+});
+
+exports.getFavorite = catchAsync(async (req, res, next) => {
+  const user = await User.findById(req.user.id);
+  if (!user) {
+    return next(new AppError("User not found with that Id", 404));
+  }
+  res.status(200).json({
+    status: "success",
+    data: {
+      favorites: user.favorites,
+    },
+  });
+});
+
+exports.clearFav = catchAsync(async (req, res, next) => {
+  const user = await User.findByIdAndUpdate(req.user.id, {
+    $set: { favorites: [] },
+  });
+  if (!user) {
+    return next(new AppError("User not found with that Id", 404));
+  }
+  res.status(200).json({
+    status: "success",
+    message: "clear Favorites succssesful",
+  });
+});
+
+// Orders Functions
+
+exports.addOrder = catchAsync(async (req, res, next) => {});

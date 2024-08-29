@@ -53,6 +53,12 @@ const userSchema = new mongoose.Schema({
       ref: "Product",
     },
   ],
+  orders: [
+    {
+      type: mongoose.Schema.ObjectId,
+      ref: "Order",
+    },
+  ],
 });
 // hash password
 userSchema.pre("save", async function (next) {
@@ -66,13 +72,21 @@ userSchema.pre("save", async function (next) {
   next();
 });
 
-// userSchema.pre(/^find/, function (next) {
-//   this.populate({
-//     path: "shopCart",
-//     select: "name price images",
-//   });
-//   next();
-// });
+userSchema.pre(/^find/, function (next) {
+  this.populate({
+    path: "shopCart",
+    select: "name price images",
+  });
+  this.populate({
+    path: "favorites",
+    select: "name price images",
+  });
+  this.populate({
+    path: "orders",
+    select: "name price images",
+  });
+  next();
+});
 
 userSchema.methods.correctPassword = async function (
   candidatePassword,

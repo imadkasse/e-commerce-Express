@@ -9,6 +9,10 @@ const {
   removeProduct,
   getShopCart,
   clearCart,
+  addProductToFav,
+  removeProductFromFav,
+  getFavorite,
+  clearFav,
 } = require("../controllers/productController");
 const { protect } = require("../controllers/authController");
 
@@ -22,9 +26,20 @@ router
   .route("/shopCart/allItems")
   .get(protect, getShopCart)
   .post(protect, clearCart);
+
 router
   .route("/shopCart/:id")
   .post(protect, addProduct)
   .delete(protect, removeProduct);
+
+router
+  .route("/favorite/allItems")
+  .get(protect, getFavorite)
+  .delete(protect, clearFav);
+
+router
+  .route("/favorite/:id")
+  .post(protect, addProductToFav)
+  .delete(protect, removeProductFromFav);
 
 module.exports = router;

@@ -5,10 +5,12 @@ const xss = require("xss-clean");
 const mongoSanitize = require("express-mongo-sanitize");
 const rateLimit = require("express-rate-limit");
 const hpp = require("hpp");
+const cors = require("cors");
 
 // Routes
 const userRoute = require("./routes/userRoute");
 const productRoute = require("./routes/productRoute");
+const orderRoute = require("./routes/orderRoute");
 
 //erorr handler
 const AppError = require("./utils/appError");
@@ -17,6 +19,7 @@ const globalError = require("./controllers/errorController");
 const app = express();
 
 //Global middlewares
+app.use(cors());
 //Set Security HTTPS Headers
 app.use(helmet()); // من المهم وضعه في بداية التطبيق
 
@@ -59,6 +62,7 @@ app.use(
 );
 app.use("/api/eco/users", userRoute);
 app.use("/api/eco/products", productRoute);
+app.use("/api/eco/orders", orderRoute);
 
 app.all("*", (req, res, next) => {
   // إذا قمنا بتمرير قيمة لnext فإنه يعتبرها رسالة خطأ ويقوم بإعدام جميع البرامج الوسيطة
