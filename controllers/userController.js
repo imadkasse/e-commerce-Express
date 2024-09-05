@@ -1,4 +1,5 @@
 const User = require("../models/userModel.");
+const APIFeatures = require("../utils/apiFeaturs");
 const AppError = require("../utils/appError");
 const catchAsync = require("../utils/catchAsync");
 
@@ -14,7 +15,13 @@ const fileterObj = (obj, ...allowedFields) => {
 };
 
 exports.getAllUsers = catchAsync(async (req, res, next) => {
-  const users = await User.find();
+  const features = new APIFeatures(User.find(), req.query)
+    .filter()
+    .sort()
+    .limitFields()
+    .paginate();
+
+  const users = await features.query;
   res.status(200).json({
     status: "success",
     results: users.length,
@@ -25,7 +32,7 @@ exports.getAllUsers = catchAsync(async (req, res, next) => {
 });
 
 exports.getUser = catchAsync(async (req, res, next) => {
-  const user = await User.findById(req.params.id); 
+  const user = await User.findById(req.params.id);
   if (!user) {
     return next(new AppError("User not found with that Id ", 404));
   }
@@ -68,5 +75,15 @@ exports.deleteUser = catchAsync(async (req, res, next) => {
   });
   res.status(204).json({
     status: "success",
+  });
+});
+
+//ADMIN
+exports.deleteUserByAdmin = catchAsync(async (req, res, next) => {
+  await User.findByIdAndDelete(req.params.id);
+  res.status(200).json({
+    status: "success",
+    message: "User removed",
+    data: null,
   });
 });

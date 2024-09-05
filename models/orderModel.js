@@ -1,14 +1,13 @@
 const mongoose = require("mongoose");
 
 const orderSchema = new mongoose.Schema({
-  productId: [
+  products: [
     {
       type: mongoose.Schema.ObjectId,
       ref: "Product",
       required: true,
     },
   ],
-
   date: {
     type: Date,
     default: Date.now(),
@@ -26,9 +25,26 @@ const orderSchema = new mongoose.Schema({
   },
 });
 
-orderSchema.pre("save", function (next) {
+orderSchema.pre("save", async function (next) {
+  // Populate productId with name and price fields
+  await this.populate({
+    path: "products",
+    select: "name price",
+  });
+
+  // Calculate the total price based on productId prices
+  const totalPrice = this.products.reduce(
+    (acc, product) => acc + product.price,
+    0
+  );
+  this.price = totalPrice;
+
+  next();
+});
+
+orderSchema.pre(/^find/, async function (next) {
   this.populate({
-    path: "productId",
+    path: "products",
     select: "name price",
   });
   next();

@@ -81,10 +81,7 @@ userSchema.pre(/^find/, function (next) {
     path: "favorites",
     select: "name price images",
   });
-  this.populate({
-    path: "orders",
-    select: "name price images",
-  });
+  this.populate("orders");
   next();
 });
 

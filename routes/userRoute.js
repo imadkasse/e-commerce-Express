@@ -11,6 +11,7 @@ const {
   getUser,
   updateUser,
   deleteUser,
+  deleteUserByAdmin,
 } = require("../controllers/userController");
 
 const router = express.Router();
@@ -27,5 +28,8 @@ router.route("/").get(getAllUsers);
 router.route("/:id").get(getUser);
 router.route("/update-user").patch(protect, updateUser);
 router.route("/delete-user").delete(protect, deleteUser);
+
+//ADMIN
+router.route("/:id").delete(deleteUserByAdmin);
 
 module.exports = router;
