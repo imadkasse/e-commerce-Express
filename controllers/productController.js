@@ -90,9 +90,16 @@ exports.addProduct = catchAsync(async (req, res, next) => {
   if (!product) {
     return next(new AppError("Product not found with that Id", 404));
   }
-  // Add to Cart
 
-  const user = await User.findByIdAndUpdate(req.user.id, {
+  // Add to Cart
+  // Check if the product already exists in the shopCart
+  const user = await User.findById(req.user.id);
+  if (user.shopCart.includes(product._id)) {
+    return next(new AppError("Product already in the cart", 400));
+  }
+
+  // Add to Cart using findByIdAndUpdate
+  await User.findByIdAndUpdate(req.user.id, {
     $push: { shopCart: product._id },
   });
 
@@ -148,7 +155,17 @@ exports.addProductToFav = catchAsync(async (req, res, next) => {
     return next(new AppError("Product not found with that Id", 404));
   }
 
-  const user = await User.findByIdAndUpdate(req.user.id, {
+  const user = await User.findById(req.user.id);
+
+  const isProductInFavorites = user.favorites.some(
+    (favorite) => favorite._id.toString() === product._id.toString()
+  );
+
+  if (isProductInFavorites) {
+    return next(new AppError("Product is already in your Favorites", 400));
+  }
+
+  await User.findByIdAndUpdate(req.user.id, {
     $push: { favorites: product._id },
   });
 

@@ -25,7 +25,7 @@ router.post("/forgot-password", forgotPassword);
 router.post("/reset-password/:token", resetPassword);
 
 router.route("/").get(getAllUsers);
-router.route("/:id").get(getUser);
+router.route("/data-user").get(getUser);
 router.route("/update-user").patch(protect, updateUser);
 router.route("/delete-user").delete(protect, deleteUser);
 

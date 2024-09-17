@@ -15,11 +15,20 @@ const orderRoute = require("./routes/orderRoute");
 //erorr handler
 const AppError = require("./utils/appError");
 const globalError = require("./controllers/errorController");
+const cookieParser = require("cookie-parser");
 
 const app = express();
 
 //Global middlewares
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://localhost:3000", // النطاق الذي يمكنه الوصول إلى الخادم
+    credentials: true, // السماح بإرسال الكريدنشلز مثل الكوكيز
+  })
+);
+
+
+
 //Set Security HTTPS Headers
 app.use(helmet()); // من المهم وضعه في بداية التطبيق
 
@@ -31,7 +40,7 @@ if (process.env.NODE_ENV === "development") {
 //Limit Requests from same api
 const limiter = rateLimit({
   // limit each IP to 100 requests per hour if requeste> 100 in hour => error message
-  max: 1000,
+  max: 3000,
   windowMs: 60 * 60 * 1000,
   message: "Too many requests from this IP, please try again in an hour.",
 });

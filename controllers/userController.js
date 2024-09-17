@@ -2,6 +2,7 @@ const User = require("../models/userModel.");
 const APIFeatures = require("../utils/apiFeaturs");
 const AppError = require("../utils/appError");
 const catchAsync = require("../utils/catchAsync");
+const jwt = require("jsonwebtoken");
 
 const fileterObj = (obj, ...allowedFields) => {
   const newObj = {};
@@ -32,10 +33,39 @@ exports.getAllUsers = catchAsync(async (req, res, next) => {
 });
 
 exports.getUser = catchAsync(async (req, res, next) => {
-  const user = await User.findById(req.params.id);
-  if (!user) {
-    return next(new AppError("User not found with that Id ", 404));
+  // const user = await User.findById(req.params.id);
+  // if (!user) {
+  //   return next(new AppError("User not found with that Id ", 404));
+  // }
+  // res.status(200).json({
+  //   status: "success",
+  //   data: {
+  //     user,
+  //   },
+  // });
+
+  // استخراج الـ token من الـ headers
+  const token = req.headers.authorization?.split(" ")[1]; // إزالة "Bearer" من الترويسة
+
+  if (!token) {
+    return next(new AppError("Token not provided", 401));
   }
+
+  // التحقق من الـ token واستخراج الـ id من الـ payload
+  let decoded;
+  try {
+    decoded = jwt.verify(token, process.env.JWT_SECRET); // افترض أن مفتاح التوقيع في JWT موجود في المتغيرات البيئية
+  } catch (err) {
+    return next(new AppError("Invalid token", 401));
+  }
+
+  // البحث عن المستخدم بناءً على الـ id المستخرج من الـ token
+  const user = await User.findById(decoded.id);
+  if (!user) {
+    return next(new AppError("User not found with that ID", 404));
+  }
+
+  // إذا تم العثور على المستخدم، إعادة البيانات
   res.status(200).json({
     status: "success",
     data: {

@@ -18,6 +18,15 @@ const signToken = (id) => {
 
 const createAndSendToken = (user, statusCode, res) => {
   const token = signToken(user.id);
+
+  // إعداد الكوكي مع HttpOnly
+  res.cookie("token", token, {
+    httpOnly: true, // الكوكي يكون HttpOnly مما يمنع الوصول من JavaScript
+    secure: false, // فقط في HTTPS إذا كنت في بيئة الإنتاج
+    maxAge: 24 * 60 * 60 * 1000, // مدة صلاحية الكوكي (24 ساعة)
+    sameSite: "Strict", // حماية ضد هجمات CSRF
+  });
+
   res.status(200).json({
     status: statusCode,
     token,
