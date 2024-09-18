@@ -25,7 +25,7 @@ router.route("/:id").patch(updateProduct).delete(deleteProduct).get(getProduct);
 router
   .route("/shopCart/allItems")
   .get(protect, getShopCart)
-  .post(protect, clearCart);
+  .delete(protect, clearCart);
 
 router
   .route("/shopCart/:id")
