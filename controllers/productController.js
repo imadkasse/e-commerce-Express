@@ -172,6 +172,12 @@ exports.addProductToFav = catchAsync(async (req, res, next) => {
   res.status(201).json({
     status: "success",
     message: "Product added to Favorites successfully",
+    data: {
+      _id: product._id,
+      name: product.name,
+      price: product.price,
+      image: product.images,
+    },
   });
 });
 
