@@ -59,6 +59,10 @@ const userSchema = new mongoose.Schema({
       ref: "Order",
     },
   ],
+  role: {
+    type: String,
+    default: "user",
+  },
 });
 // hash password
 userSchema.pre("save", async function (next) {

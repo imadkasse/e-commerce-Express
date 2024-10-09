@@ -4,6 +4,17 @@ const APIFeatures = require("../utils/apiFeaturs");
 const Order = require("../models/orderModel");
 const User = require("../models/userModel.");
 
+exports.getAllOrdersByUser = catchAsync(async (req, res, next) => {
+  const user = await User.findById(req.user.id);
+  const orders = user.orders;
+
+  res.status(200).json({
+    status: "success",
+    message: "Order added",
+    orders: orders,
+  });
+});
+
 exports.addOrder = catchAsync(async (req, res, next) => {
   const newOrder = await Order.create(req.body);
   const user = await User.findByIdAndUpdate(req.user.id, {

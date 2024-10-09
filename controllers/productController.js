@@ -106,6 +106,9 @@ exports.addProduct = catchAsync(async (req, res, next) => {
   res.status(201).json({
     status: "success",
     message: "Product added successfully",
+    data: {
+      product,
+    },
   });
 });
 

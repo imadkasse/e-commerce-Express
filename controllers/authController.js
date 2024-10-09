@@ -42,6 +42,7 @@ exports.signup = catchAsync(async (req, res, next) => {
     email: req.body.email,
     password: req.body.password,
     passwordConfirmed: req.body.passwordConfirmed,
+    role: req.body.role,
   });
 
   createAndSendToken(newUser, 201, res);
@@ -164,12 +165,18 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
 });
 
 exports.updatePassword = catchAsync(async (req, res, next) => {
-  const user = await User.findOne(req.user.id).select("+password");
-  //1) check if old password is correct
+  const user = await User.findById(req.user.id).select("+password");
+
+  if (!user) {
+    return next(new AppError("User not found", 404));
+  }
+
+  // 1) Check if old password is correct
   if (!(await user.correctPassword(req.body.passwordCurrent, user.password))) {
     return next(new AppError("Incorrect current password", 401));
   }
-  //2) update password
+
+  // 3) Update password
   user.password = req.body.password;
   user.passwordConfirmed = req.body.passwordConfirmed;
   await user.save();
