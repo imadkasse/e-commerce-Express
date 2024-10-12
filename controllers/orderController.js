@@ -16,14 +16,19 @@ exports.getAllOrdersByUser = catchAsync(async (req, res, next) => {
 });
 
 exports.addOrder = catchAsync(async (req, res, next) => {
-  const newOrder = await Order.create(req.body);
+  const newOrder = await Order.create({
+    ...req.body,
+    user: req.user.id,
+  });
+
   const user = await User.findByIdAndUpdate(req.user.id, {
     $push: { orders: newOrder._id },
   });
   if (!user) {
     return next(new AppError("User not found with that Id", 404));
   }
-  res.status(200).json({
+
+  res.status(201).json({
     status: "success",
     message: "Order added",
   });
@@ -72,7 +77,7 @@ exports.getAllOrders = catchAsync(async (req, res, next) => {
     .paginate();
 
   const orders = await features.query;
-
+  console.log(orders);
   res.status(200).json({
     status: "success",
     results: orders.length,

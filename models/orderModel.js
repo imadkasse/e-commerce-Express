@@ -23,10 +23,19 @@ const orderSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  status: {
+    type: String,
+    default: "on delivery",
+    validate: {
+      validator: function (value) {
+        return ["on delivery", "Delivered", "In the warehouse"].includes(value);
+      },
+      message: "value do not match",
+    },
+  },
 });
 
 orderSchema.pre("save", async function (next) {
-  // Populate productId with name and price fields
   await this.populate({
     path: "products",
     select: "name price",
@@ -43,10 +52,12 @@ orderSchema.pre("save", async function (next) {
 });
 
 orderSchema.pre(/^find/, async function (next) {
-  this.populate({
-    path: "products",
-    select: "name price",
-  });
+  this.populate([
+    {
+      path: "products",
+      select: "name price",
+    },
+  ]);
   next();
 });
 
