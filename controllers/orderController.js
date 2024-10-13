@@ -16,17 +16,20 @@ exports.getAllOrdersByUser = catchAsync(async (req, res, next) => {
 });
 
 exports.addOrder = catchAsync(async (req, res, next) => {
-  const newOrder = await Order.create({
-    ...req.body,
-    user: req.user.id,
-  });
-
-  const user = await User.findByIdAndUpdate(req.user.id, {
-    $push: { orders: newOrder._id },
-  });
+  const user = await User.findById(req.user.id);
   if (!user) {
     return next(new AppError("User not found with that Id", 404));
   }
+
+  const newOrder = await Order.create({
+    ...req.body,
+    username: user.username,
+    email: user.email,
+  });
+
+  await User.findByIdAndUpdate(req.user.id, {
+    $push: { orders: newOrder._id },
+  });
 
   res.status(201).json({
     status: "success",
