@@ -29,6 +29,9 @@ const handleJWTError = () => {
 const handleJWTExpiredError = () => {
   return new AppError("Token expired. Please log in again.", 401);
 };
+const handelPermissionError = () => {
+  return new AppError("you dont have permission  . Please log in agin.", 401);
+};
 
 const sendErrorDev = (err, res) => {
   res.status(err.statusCode).json({
@@ -68,9 +71,10 @@ module.exports = (err, req, res, next) => {
 
   if (process.env.NODE_ENV === "development") {
     sendErrorDev(err, res);
+    console.log("the eror :", err.message);
   } else if (process.env.NODE_ENV === "production") {
     let error = { ...err };
-    console.log("the eror :", err);
+    console.log("the eror :", error);
     if (err.name === "CastError") error = handleCastErrorDB(error);
     if (err.code === 11000) error = handleDuplicateErrorDB(error);
     if (error._message === "Validation failed")
@@ -78,6 +82,8 @@ module.exports = (err, req, res, next) => {
     if (error.name === "JsonWebTokenError") error = handleJWTError(error);
     if (error.name === "TokenExpiredError")
       error = handleJWTExpiredError(error);
+
+    if (err.message === "You do not have permission to access this route")error = handelPermissionError();
 
     sendErrorUser(error, res);
   }
