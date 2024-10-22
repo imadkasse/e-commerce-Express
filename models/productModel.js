@@ -41,6 +41,12 @@ const productSchema = mongoose.Schema({
     type: Boolean,
     default: true,
   },
+  reviews: [
+    {
+      type: mongoose.Schema.ObjectId,
+      ref: "Review",
+    },
+  ],
 });
 
 const Product = mongoose.model("Product", productSchema);

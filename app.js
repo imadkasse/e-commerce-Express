@@ -11,6 +11,7 @@ const cors = require("cors");
 const userRoute = require("./routes/userRoute");
 const productRoute = require("./routes/productRoute");
 const orderRoute = require("./routes/orderRoute");
+const reviewRoute = require("./routes/reviewRoute");
 
 //erorr handler
 const AppError = require("./utils/appError");
@@ -22,12 +23,10 @@ const app = express();
 //Global middlewares
 app.use(
   cors({
-    origin: "http://localhost:3000", // النطاق الذي يمكنه الوصول إلى الخادم
+    origin: ["http://localhost:3000", "https://ecommerceapp-wheat.vercel.app"], // النطاق الذي يمكنه الوصول إلى الخادم
     credentials: true, // السماح بإرسال الكريدنشلز مثل الكوكيز
   })
 );
-
-
 
 //Set Security HTTPS Headers
 app.use(helmet()); // من المهم وضعه في بداية التطبيق
@@ -72,6 +71,7 @@ app.use(
 app.use("/api/eco/users", userRoute);
 app.use("/api/eco/products", productRoute);
 app.use("/api/eco/orders", orderRoute);
+app.use("/api/eco/reviews", reviewRoute);
 
 app.all("*", (req, res, next) => {
   // إذا قمنا بتمرير قيمة لnext فإنه يعتبرها رسالة خطأ ويقوم بإعدام جميع البرامج الوسيطة
