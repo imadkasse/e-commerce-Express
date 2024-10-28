@@ -3,6 +3,7 @@ const APIFeatures = require("../utils/apiFeaturs");
 const AppError = require("../utils/appError");
 const catchAsync = require("../utils/catchAsync");
 const jwt = require("jsonwebtoken");
+const factory = require("./handelFactory");
 
 const fileterObj = (obj, ...allowedFields) => {
   const newObj = {};
@@ -15,36 +16,9 @@ const fileterObj = (obj, ...allowedFields) => {
   return newObj;
 };
 
-exports.getAllUsers = catchAsync(async (req, res, next) => {
-  const features = new APIFeatures(User.find(), req.query)
-    .filter()
-    .sort()
-    .limitFields()
-    .paginate();
-
-  const users = await features.query;
-  res.status(200).json({
-    status: "success",
-    results: users.length,
-    data: {
-      users,
-    },
-  });
-});
+exports.getAllUsers = factory.getAll(User);
 
 exports.getUser = catchAsync(async (req, res, next) => {
-  // const user = await User.findById(req.params.id);
-  // if (!user) {
-  //   return next(new AppError("User not found with that Id ", 404));
-  // }
-  // res.status(200).json({
-  //   status: "success",
-  //   data: {
-  //     user,
-  //   },
-  // });
-
-  // استخراج الـ token من الـ headers
   const token = req.headers.authorization?.split(" ")[1]; // إزالة "Bearer" من الترويسة
 
   if (!token) {
@@ -60,7 +34,10 @@ exports.getUser = catchAsync(async (req, res, next) => {
   }
 
   // البحث عن المستخدم بناءً على الـ id المستخرج من الـ token
-  const user = await User.findById(decoded.id);
+  const user = await User.findById(decoded.id)
+    .populate({ path: "favorites", select: "name price images" })
+    .populate({ path: "shopCart", select: "name price images" })
+    .populate({ path: "orders" });
   if (!user) {
     return next(new AppError("User not found with that ID", 404));
   }

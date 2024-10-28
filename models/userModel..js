@@ -77,15 +77,17 @@ userSchema.pre("save", async function (next) {
 });
 
 userSchema.pre(/^find/, function (next) {
-  this.populate({
-    path: "shopCart",
-    select: "name price images",
-  });
-  this.populate({
-    path: "favorites",
-    select: "name price images",
-  });
-  this.populate("orders");
+  if (this.model.modelName === "User" ) {
+    this.populate({
+      path: "shopCart",
+      select: "name price images",
+    })
+      .populate({
+        path: "favorites",
+        select: "name price images",
+      })
+      .populate("orders");
+  }
   next();
 });
 

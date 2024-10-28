@@ -3,77 +3,24 @@ const AppError = require("../utils/appError");
 const catchAsync = require("../utils/catchAsync");
 const APIFeatures = require("./../utils/apiFeaturs");
 const User = require("../models/userModel.");
+const factory = require("./handelFactory");
 
 // Products Function
-exports.getAllProducts = catchAsync(async (req, res, next) => {
-  const features = new APIFeatures(Product.find(), req.query)
-    .filter()
-    .sort()
-    .limitFields()
-    .paginate();
-  const products = await features.query;
-  res.status(200).json({
-    status: "success",
-    results: products.length,
-    data: {
-      products,
-    },
-  });
-});
+exports.getAllProducts = factory.getAll(Product);
+exports.createProduct = factory.createOne(Product);
 
-exports.createProduct = catchAsync(async (req, res, next) => {
-  const newProduct = await Product.create(req.body);
-  res.status(201).json({
-    status: "success",
-    data: {
-      newProduct,
-    },
-  });
-});
+exports.getProduct = factory.getOne(Product,'reviews');
 
-exports.getProduct = catchAsync(async (req, res, next) => {
-  const product = await Product.findById(req.params.id);
-  if (!product) {
-    return next(new AppError("Product not found with that Id", 404));
-  }
-  res.status(200).json({
-    status: "success ",
-    data: {
-      product,
-    },
-  });
-});
+exports.updateProduct = factory.updateOne(Product);
 
-exports.updateProduct = catchAsync(async (req, res, next) => {
-  const product = await Product.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-    runValidators: true,
-  });
-  if (!product) {
-    return next(new AppError("Product not found with that Id", 404));
-  }
-  res.status(200).json({
-    status: "success ",
-    data: {
-      product,
-    },
-  });
-});
-
-exports.deleteProduct = catchAsync(async (req, res, next) => {
-  const product = await Product.findByIdAndDelete(req.params.id);
-  if (!product) {
-    return next(new AppError("Product not found with that Id", 404));
-  }
-  res.status(204).json({
-    status: "success",
-    data: null,
-  });
-});
+exports.deleteProduct = factory.deleteOne(Product);
 
 // Shop Cart Functions
 exports.getShopCart = catchAsync(async (req, res, next) => {
-  const user = await User.findById(req.user.id);
+  const user = await User.findById(req.user.id).populate({
+    path: "shopCart",
+    select: "name price images",
+  });
   if (!user) {
     return next(new AppError("User not found with that Id", 404));
   }
@@ -206,7 +153,10 @@ exports.removeProductFromFav = catchAsync(async (req, res, next) => {
 });
 
 exports.getFavorite = catchAsync(async (req, res, next) => {
-  const user = await User.findById(req.user.id);
+  const user = await User.findById(req.user.id).populate({
+    path: "favorites",
+    select: "name price images",
+  });
   if (!user) {
     return next(new AppError("User not found with that Id", 404));
   }
@@ -234,3 +184,5 @@ exports.clearFav = catchAsync(async (req, res, next) => {
 // Orders Functions
 
 exports.addOrder = catchAsync(async (req, res, next) => {});
+
+// Review Functions

@@ -5,7 +5,7 @@ const Order = require("../models/orderModel");
 const User = require("../models/userModel.");
 
 exports.getAllOrdersByUser = catchAsync(async (req, res, next) => {
-  const user = await User.findById(req.user.id);
+  const user = await User.findById(req.user.id).populate('orders')
   const orders = user.orders;
 
   res.status(200).json({
