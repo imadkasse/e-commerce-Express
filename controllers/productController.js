@@ -5,11 +5,76 @@ const APIFeatures = require("./../utils/apiFeaturs");
 const User = require("../models/userModel.");
 const factory = require("./handelFactory");
 
+const multer = require("multer");
+const cloudinary = require("cloudinary").v2;
+const sharp = require("sharp");
+
+cloudinary.config({
+  cloud_name: process.env.CLOUD_NAME, // اسم السحابة
+  api_key: process.env.API_KEY, // مفتاح API
+  api_secret: process.env.API_SECRET, // سر API
+});
+
+const multerStorage = multer.memoryStorage();
+
+const multerFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith("image")) {
+    cb(null, true);
+  } else {
+    cb(new AppError("Not an imag please uplaod only image ", 400), false);
+  }
+};
+const upload = multer({
+  storage: multerStorage,
+  fileFilter: multerFilter,
+});
+
+exports.uploadImageProduct = upload.array("images", 4);
+
+exports.uploadUsingClodinary = catchAsync(async (req, res, next) => {
+  if (!req.files || req.files.length === 0) {
+    return next(new AppError("Please upload img", 404));
+  }
+
+  // رفع كل صورة إلى Cloudinary والحصول على روابط الصور
+  const imageUrls = [];
+
+  for (let i = 0; i < req.files.length; i++) {
+    const file = req.files[i];
+
+    // تعديل حجم الصورة باستخدام Sharp
+    const resizedImageBuffer = await sharp(file.buffer)
+      .resize(800, 800) // تعديل الحجم (مثال 800x800 بكسل)
+      .toBuffer(); // تحويل الصورة المعدلة إلى buffer
+
+    // رفع الصورة إلى Cloudinary
+    const result = await new Promise((resolve, reject) => {
+      const stream = cloudinary.uploader.upload_stream(
+        { resource_type: "image" },
+        (error, result) => {
+          if (error) {
+            reject(error);
+          } else {
+            resolve(result);
+          }
+        }
+      );
+
+      stream.end(resizedImageBuffer);
+    });
+
+    imageUrls.push(result.secure_url); // حفظ الرابط في المصفوفة
+  }
+
+  req.body.images = imageUrls;
+  next();
+});
+
 // Products Function
 exports.getAllProducts = factory.getAll(Product);
 exports.createProduct = factory.createOne(Product);
 
-exports.getProduct = factory.getOne(Product,'reviews');
+exports.getProduct = factory.getOne(Product, "reviews");
 
 exports.updateProduct = factory.updateOne(Product);
 

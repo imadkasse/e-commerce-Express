@@ -13,13 +13,18 @@ const {
   removeProductFromFav,
   getFavorite,
   clearFav,
+  uploadImageProduct,
+  uploadUsingClodinary,
 } = require("../controllers/productController");
 const { protect } = require("../controllers/authController");
 
 const router = express.Router();
 
 // Routes
-router.route("/").get(getAllProducts).post(createProduct);
+router
+  .route("/")
+  .get(getAllProducts)
+  .post(uploadImageProduct, uploadUsingClodinary, createProduct);
 router.route("/:id").patch(updateProduct).delete(deleteProduct).get(getProduct);
 
 router

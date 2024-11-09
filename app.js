@@ -73,6 +73,7 @@ app.use("/api/eco/products", productRoute);
 app.use("/api/eco/orders", orderRoute);
 app.use("/api/eco/reviews", reviewRoute);
 
+
 app.all("*", (req, res, next) => {
   // إذا قمنا بتمرير قيمة لnext فإنه يعتبرها رسالة خطأ ويقوم بإعدام جميع البرامج الوسيطة
   next(new AppError(`Can't find ${req.originalUrl} on this server`, 404));
