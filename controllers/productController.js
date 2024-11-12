@@ -6,14 +6,8 @@ const User = require("../models/userModel.");
 const factory = require("./handelFactory");
 
 const multer = require("multer");
-const cloudinary = require("cloudinary").v2;
+const cloudinary = require("./cloudinary");
 const sharp = require("sharp");
-
-cloudinary.config({
-  cloud_name: process.env.CLOUD_NAME, // اسم السحابة
-  api_key: process.env.API_KEY, // مفتاح API
-  api_secret: process.env.API_SECRET, // سر API
-});
 
 const multerStorage = multer.memoryStorage();
 
@@ -32,7 +26,7 @@ const upload = multer({
 exports.uploadImageProduct = upload.array("images", 4);
 
 exports.uploadUsingClodinary = catchAsync(async (req, res, next) => {
-  if (!req.files || req.files.length === 0) {
+  if (!req.files) {
     return next(new AppError("Please upload img", 404));
   }
 
