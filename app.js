@@ -23,7 +23,11 @@ const app = express();
 //Global middlewares
 app.use(
   cors({
-    origin: ["http://localhost:3000", "https://ecommerceapp-wheat.vercel.app"], // النطاق الذي يمكنه الوصول إلى الخادم
+    origin: [
+      "http://localhost:3000",
+      "https://ecommerceapp-wheat.vercel.app",
+      "http://localhost:5173",
+    ], // النطاق الذي يمكنه الوصول إلى الخادم
     credentials: true, // السماح بإرسال الكريدنشلز مثل الكوكيز
   })
 );
@@ -72,7 +76,6 @@ app.use("/api/eco/users", userRoute);
 app.use("/api/eco/products", productRoute);
 app.use("/api/eco/orders", orderRoute);
 app.use("/api/eco/reviews", reviewRoute);
-
 
 app.all("*", (req, res, next) => {
   // إذا قمنا بتمرير قيمة لnext فإنه يعتبرها رسالة خطأ ويقوم بإعدام جميع البرامج الوسيطة
