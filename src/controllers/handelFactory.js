@@ -1,6 +1,6 @@
-const catchAsync = require("../utils/catchAsync");
+const catchAsync = require("./../utils/catchAsync");
 const APIFeatures = require("./../utils/apiFeaturs");
-const AppError = require("../utils/appError");
+const AppError = require("./../utils/appError");
 
 exports.createOne = (Model) =>
   catchAsync(async (req, res, next) => {

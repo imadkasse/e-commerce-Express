@@ -8,14 +8,15 @@ const hpp = require("hpp");
 const cors = require("cors");
 
 // Routes
-const userRoute = require("./routes/userRoute");
-const productRoute = require("./routes/productRoute");
-const orderRoute = require("./routes/orderRoute");
-const reviewRoute = require("./routes/reviewRoute");
+const userRoute = require("./routes/user.routes");
+const authRoute = require("./routes/auth.routes");
+const productRoute = require("./routes/product.routes");
+const orderRoute = require("./routes/order.routes");
+const reviewRoute = require("./routes/review.routes");
 
 //erorr handler
 const AppError = require("./utils/appError");
-const globalError = require("./controllers/errorController");
+const globalError = require("./controllers/error.controller");
 const cookieParser = require("cookie-parser");
 
 const app = express();
@@ -72,16 +73,17 @@ app.use(
     ],
   })
 );
-app.use("/api/eco/users", userRoute);
-app.use("/api/eco/products", productRoute);
-app.use("/api/eco/orders", orderRoute);
-app.use("/api/eco/reviews", reviewRoute);
+app.use("/api/v1/users", userRoute);
+app.use("/api/v1/auth", authRoute);
+app.use("/api/v1/products", productRoute);
+app.use("/api/v1/orders", orderRoute);
+app.use("/api/v1/reviews", reviewRoute);
 
 app.all("*", (req, res, next) => {
   // إذا قمنا بتمرير قيمة لnext فإنه يعتبرها رسالة خطأ ويقوم بإعدام جميع البرامج الوسيطة
   next(new AppError(`Can't find ${req.originalUrl} on this server`, 404));
 });
-//Error Handling Middleware
+
 app.use(globalError);
 
 module.exports = app;

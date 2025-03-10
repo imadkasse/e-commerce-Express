@@ -1,13 +1,13 @@
 const express = require("express");
+const { permissionAdmin, protect } = require("../middlewares/auth.middleware");
 
-const { protect, permissionAdmin } = require("../controllers/authController");
 const {
   addOrder,
   removeOrder,
   getAllOrders,
   updateOrder,
   getAllOrdersByUser,
-} = require("../controllers/orderController");
+} = require("../controllers/order.controller");
 
 const router = express.Router();
 

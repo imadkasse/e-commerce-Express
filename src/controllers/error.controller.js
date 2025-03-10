@@ -1,4 +1,4 @@
-const AppError = require("./../utils/appError");
+const AppError = require("../utils/appError");
 
 const handleCastErrorDB = (err) => {
   const message = `Invalid ${err.path}: ${err.value}.`;
@@ -44,6 +44,7 @@ const sendErrorDev = (err, res) => {
 
 const sendErrorUser = (err, res) => {
   // Operational, trusted error: send message to client
+
   if (err.isOperational) {
     res.status(err.statusCode).json({
       status: err.status,
@@ -64,17 +65,15 @@ const sendErrorUser = (err, res) => {
 };
 
 module.exports = (err, req, res, next) => {
-  // console.log(err.stack);
-
   err.statusCode = err.statusCode || 500;
   err.status = err.status || "error";
 
   if (process.env.NODE_ENV === "development") {
     sendErrorDev(err, res);
     console.log("the eror :", err.message);
-  } else if (process.env.NODE_ENV === "production") {
+  } else {
     let error = { ...err };
-    console.log("the eror :", error);
+
     if (err.name === "CastError") error = handleCastErrorDB(error);
     if (err.code === 11000) error = handleDuplicateErrorDB(error);
     if (error._message === "Validation failed")
@@ -83,8 +82,9 @@ module.exports = (err, req, res, next) => {
     if (error.name === "TokenExpiredError")
       error = handleJWTExpiredError(error);
 
-    if (err.message === "You do not have permission to access this route")error = handelPermissionError();
+    if (err.message === "You do not have permission to access this route")
+      error = handelPermissionError();
 
-    sendErrorUser(error, res);
+    sendErrorUser(err, res);
   }
 };

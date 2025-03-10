@@ -15,8 +15,8 @@ const {
   clearFav,
   uploadImageProduct,
   uploadUsingClodinary,
-} = require("../controllers/productController");
-const { protect } = require("../controllers/authController");
+} = require("../controllers/product.controller");
+const { protect } = require("../middlewares/auth.middleware");
 
 const router = express.Router();
 

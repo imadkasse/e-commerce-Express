@@ -1,7 +1,7 @@
-const Product = require("./../models/productModel");
+const Product = require("../models/productModel");
 const AppError = require("../utils/appError");
 const catchAsync = require("../utils/catchAsync");
-const APIFeatures = require("./../utils/apiFeaturs");
+const APIFeatures = require("../utils/apiFeaturs");
 const User = require("../models/userModel.");
 const factory = require("./handelFactory");
 
