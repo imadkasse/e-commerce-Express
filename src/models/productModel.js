@@ -49,7 +49,7 @@ const productSchema = mongoose.Schema({
   ],
   avgReviews: {
     type: Number,
-    default: 0,
+    default: 4.5,
   },
   numReview: {
     type: Number,

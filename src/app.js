@@ -1,5 +1,4 @@
 const express = require("express");
-const morgan = require("morgan");
 const helmet = require("helmet");
 const xss = require("xss-clean");
 const mongoSanitize = require("express-mongo-sanitize");
@@ -38,6 +37,7 @@ app.use(helmet()); // من المهم وضعه في بداية التطبيق
 
 //Development logging
 if (process.env.NODE_ENV === "development") {
+  const morgan = require("morgan");
   app.use(morgan("dev"));
 }
 
