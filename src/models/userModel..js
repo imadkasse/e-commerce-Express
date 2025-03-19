@@ -17,9 +17,9 @@ const userSchema = new mongoose.Schema({
   },
   password: {
     type: String,
+    select: false,
     required: [true, " the password is required"],
     minlength: [8, "the password must be at least 8 characters long"],
-    select: false,
   },
   passwordConfirmed: {
     type: String,
@@ -77,7 +77,7 @@ userSchema.pre("save", async function (next) {
 });
 
 userSchema.pre(/^find/, function (next) {
-  if (this.model.modelName === "User" ) {
+  if (this.model.modelName === "User") {
     this.populate({
       path: "shopCart",
       select: "name price images",
@@ -87,6 +87,7 @@ userSchema.pre(/^find/, function (next) {
         select: "name price images",
       })
       .populate("orders");
+    this.select("-password");
   }
   next();
 });

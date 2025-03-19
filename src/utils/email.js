@@ -1,4 +1,5 @@
 const nodemailer = require("nodemailer");
+//! in after time change this function to class and add functions as methods
 
 const sendEmail = async (opt) => {
   const transport = nodemailer.createTransport({
@@ -17,5 +18,16 @@ const sendEmail = async (opt) => {
   };
   await transport.sendMail(mailOptions);
 };
+
+class SendEmail {
+  constructor() {}
+  async sendWelcomEmail(opt) {
+    await sendEmail(opt); // change this after time
+  }
+
+  async sendRestPassword(opt) {
+    await sendEmail(opt);// change this after time
+  }
+}
 
 module.exports = sendEmail;

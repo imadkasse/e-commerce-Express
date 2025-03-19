@@ -16,18 +16,14 @@ const reviewRoute = require("./routes/review.routes");
 //erorr handler
 const AppError = require("./utils/appError");
 const globalError = require("./controllers/error.controller");
-const cookieParser = require("cookie-parser");
+// const cookieParser = require("cookie-parser");
 
 const app = express();
 
 //Global middlewares
 app.use(
   cors({
-    origin: [
-      "http://localhost:3000",
-      "https://ecommerceapp-wheat.vercel.app",
-      "http://localhost:5173",
-    ], // النطاق الذي يمكنه الوصول إلى الخادم
+    origin: ["http://localhost:3000", "https://ecommerceapp-wheat.vercel.app"], // النطاق الذي يمكنه الوصول إلى الخادم
     credentials: true, // السماح بإرسال الكريدنشلز مثل الكوكيز
   })
 );
@@ -61,9 +57,9 @@ app.use(mongoSanitize());
 app.use(xss());
 
 //Prevent parameter pollution
-app.use(
+app.use( 
   hpp({
-    whitelist: [
+    whitelist: [ // change the whitelist after time
       "duration",
       "ratingsQuantity",
       "ratingsAverage",

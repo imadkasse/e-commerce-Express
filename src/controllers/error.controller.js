@@ -6,7 +6,7 @@ const handleCastErrorDB = (err) => {
 };
 
 const handleDuplicateErrorDB = (err) => {
-  const value = err.keyValue.name;
+  const value = Object.values(err.keyValue)[0];
 
   const message = `Duplicate field value :${value}  please use another value`;
 
@@ -15,7 +15,7 @@ const handleDuplicateErrorDB = (err) => {
 
 const handleValidationErrorDB = (err) => {
   const errors = Object.values(err.errors).map((el) => el.message);
-  console.log(errors);
+  console.log("hello from errorDb", errors);
   const message = `Invalid input data: ${errors.join(
     ".   "
   )} please use another values`;
@@ -72,19 +72,21 @@ module.exports = (err, req, res, next) => {
     sendErrorDev(err, res);
     console.log("the eror :", err.message);
   } else {
-    let error = { ...err };
+    let error = { ...err, message: err.message, name: err.name };
+    console.log(error.name);
 
-    if (err.name === "CastError") error = handleCastErrorDB(error);
-    if (err.code === 11000) error = handleDuplicateErrorDB(error);
-    if (error._message === "Validation failed")
+    if (error.name === "CastError") error = handleCastErrorDB(error);
+    if (error.code === 11000) error = handleDuplicateErrorDB(error);
+    if (error.name === "Validation failed")
       error = handleValidationErrorDB(error);
-    if (error.name === "JsonWebTokenError") error = handleJWTError(error);
-    if (error.name === "TokenExpiredError")
-      error = handleJWTExpiredError(error);
+    if (error.name === "ValidationError")
+      error = handleValidationErrorDB(error);
+    if (error.name === "JsonWebTokenError") error = handleJWTError();
+    if (error.name === "TokenExpiredError") error = handleJWTExpiredError();
 
     if (err.message === "You do not have permission to access this route")
       error = handelPermissionError();
 
-    sendErrorUser(err, res);
+    sendErrorUser(error, res);
   }
 };

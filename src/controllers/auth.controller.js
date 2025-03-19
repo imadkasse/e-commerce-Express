@@ -42,8 +42,11 @@ exports.signup = catchAsync(async (req, res, next) => {
     email: req.body.email,
     password: req.body.password,
     passwordConfirmed: req.body.passwordConfirmed,
-    role: req.body.role,
+    role: "user", // all time save role => user in signup route
   });
+
+  // hidden the password
+  newUser.password = undefined;
 
   createAndSendToken(newUser, 201, res);
 });
@@ -66,8 +69,6 @@ exports.login = catchAsync(async (req, res, next) => {
   //4) if password is correct, generate token and send it back to user
   createAndSendToken(user, 200, res);
 });
-
-
 
 exports.forgotPassword = catchAsync(async (req, res, next) => {
   //1) get user by email
@@ -147,5 +148,3 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
 
   createAndSendToken(user, 200, res);
 });
-
-
