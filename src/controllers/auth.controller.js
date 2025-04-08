@@ -42,7 +42,8 @@ exports.signup = catchAsync(async (req, res, next) => {
     email: req.body.email,
     password: req.body.password,
     passwordConfirmed: req.body.passwordConfirmed,
-    role: "user", // all time save role => user in signup route
+    // role: "user", // all time save role => user in signup route
+    role: req.body.role,
   });
 
   // hidden the password
@@ -66,6 +67,7 @@ exports.login = catchAsync(async (req, res, next) => {
   if (!user || !(await user.correctPassword(password, user.password))) {
     return next(new AppError("Incorrect username or password", 401));
   }
+
   //4) if password is correct, generate token and send it back to user
   createAndSendToken(user, 200, res);
 });

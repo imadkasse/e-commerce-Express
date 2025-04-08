@@ -13,12 +13,6 @@ const productSchema = mongoose.Schema({
     type: Number,
     default: 0,
   },
-  rating: {
-    type: Number,
-    required: true,
-    min: [1, "minimum value for rating 1"],
-    max: [5, "maximum value for rating 5"],
-  },
   price: {
     type: Number,
     required: true,

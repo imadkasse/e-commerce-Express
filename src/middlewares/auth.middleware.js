@@ -2,6 +2,7 @@ const catchAsync = require("../utils/catchAsync");
 const { promisify } = require("util");
 const jwt = require("jsonwebtoken");
 const User = require("../models/userModel.");
+const AppError = require("../utils/appError");
 
 exports.protect = catchAsync(async (req, res, next) => {
   //1) check if token is there
@@ -77,3 +78,17 @@ exports.permissionAdmin = catchAsync(async (req, res, next) => {
 
   next();
 });
+
+exports.restrictTo = (...roles) => {
+  return (req, res, next) => {
+    // `roles` is an array of roles allowed to access the route, e.g., ['admin', 'lead-guide']
+    if (!roles.includes(req.user.role)) {
+      // If the user's role is not in the allowed roles array, send a forbidden error
+      return next(
+        new AppError("You do not have permission to access this route", 403)
+      );
+    }
+    // If the user's role is in the allowed roles array, proceed to the next middleware or route handler
+    next();
+  };
+};

@@ -16,7 +16,7 @@ const {
   uploadImageProduct,
   uploadUsingClodinary,
 } = require("../controllers/product.controller");
-const { protect } = require("../middlewares/auth.middleware");
+const { protect, restrictTo } = require("../middlewares/auth.middleware");
 
 const router = express.Router();
 
@@ -24,7 +24,14 @@ const router = express.Router();
 router
   .route("/")
   .get(getAllProducts)
-  .post(uploadImageProduct, uploadUsingClodinary, createProduct);
+  .post(
+    protect,
+    restrictTo("admin"),
+    uploadImageProduct,
+    uploadUsingClodinary,
+    createProduct
+  );
+
 router
   .route("/:id")
   .patch(uploadImageProduct, uploadUsingClodinary, updateProduct)
