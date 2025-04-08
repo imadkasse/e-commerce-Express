@@ -38,13 +38,16 @@ exports.uploadUsingClodinary = catchAsync(async (req, res, next) => {
 
     // تعديل حجم الصورة باستخدام Sharp
     const resizedImageBuffer = await sharp(file.buffer)
-      .resize(800, 800) // تعديل الحجم (مثال 800x800 بكسل)
+      .resize(300, 300, {
+        fit: "contain",
+        background: { r: 0, g: 0, b: 0, alpha: 0 },
+      }) // تعديل الحجم (مثال 800x800 بكسل)
       .toBuffer(); // تحويل الصورة المعدلة إلى buffer
 
     // رفع الصورة إلى Cloudinary
     const result = await new Promise((resolve, reject) => {
       const stream = cloudinary.uploader.upload_stream(
-        { resource_type: "image" , folder: 'ecommerce_imgs' },
+        { resource_type: "image", folder: "ecommerce_imgs" },
         (error, result) => {
           if (error) {
             reject(error);

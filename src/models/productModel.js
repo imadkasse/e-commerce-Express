@@ -49,6 +49,10 @@ const productSchema = mongoose.Schema({
     type: Number,
     default: 0,
   },
+  totalPurchased: {
+    type: Number,
+    default: 0,
+  },
 });
 
 const Product = mongoose.model("Product", productSchema);

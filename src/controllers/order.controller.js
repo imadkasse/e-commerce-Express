@@ -3,9 +3,10 @@ const catchAsync = require("../utils/catchAsync");
 const APIFeatures = require("../utils/apiFeaturs");
 const Order = require("../models/orderModel");
 const User = require("../models/userModel.");
+const Product = require("../models/productModel");
 
 exports.getAllOrdersByUser = catchAsync(async (req, res, next) => {
-  const user = await User.findById(req.user.id).populate('orders')
+  const user = await User.findById(req.user.id).populate("orders");
   const orders = user.orders;
 
   res.status(200).json({
@@ -20,6 +21,15 @@ exports.addOrder = catchAsync(async (req, res, next) => {
   if (!user) {
     return next(new AppError("User not found with that Id", 404));
   }
+
+  // تحديث عدد الشراء لكل منتج
+  await Promise.all(
+    req.body.products.map(async (id) => {
+      const product = await Product.findById(id);
+      product.totalPurchased++;
+      await product.save();
+    })
+  );
 
   const newOrder = await Order.create({
     ...req.body,
